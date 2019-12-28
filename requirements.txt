@@ -1,0 +1,4 @@
+python_sqlite_orm==0.0.1
+requests==2.18.4
+python-dotenv==0.10.3
+sqlite_orm==0.0.2b0

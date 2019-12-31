@@ -2,8 +2,8 @@ from dotenv import dotenv_values
 from vk import get_posts_from_vk
 from tg import publish_post_to_channel_if_needed
 from post import Post
-from sqlite_orm.database import Database
 from os import path
+from post import db
 
 
 def main():
@@ -13,14 +13,12 @@ def main():
     Post.update_posts(posts)
 
     result = publish_post_to_channel_if_needed(env['TG_TOKEN'], env['TG_CHANNEL_ID'])
-    print(result)
 
 
 if __name__ == '__main__':
     if not path.exists('pilferer.db'):
         print('Creating database...')
-        with Database('pilferer.db') as database:
-            database.query(Post).create().execute()
-            print('Database created in root of the project')
+        db.create_tables([Post])
+        print('Created.')
 
     main()

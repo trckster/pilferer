@@ -1,15 +1,39 @@
-from sqlite_orm.field import IntegerField, BooleanField, TextField
-from sqlite_orm.table import BaseTable
+from peewee import *
+from json import dumps
+
+db = SqliteDatabase('pilferer.db')
 
 
-class Post(BaseTable):
-    __table_name__ = 'posts'
+class Post(Model):
+    id = IntegerField()
+    date = DateTimeField()
+    text = TextField()
+    # I know, that sucks, but I will store poll as json
+    poll = TextField()
 
-    id = IntegerField(primary_key=True, auto_increment=True)
-    name = TextField(not_null=True)
-    active = BooleanField(not_null=True, default_value=1)
+    class Meta:
+        database = db
+        table_name = 'posts'
 
     @staticmethod
     def update_posts(posts):
-        print(posts.status_code)
-        pass
+        for post in posts:
+            if post['marked_as_ads']:
+                continue
+
+            if not len(post['attachments']):
+                continue
+
+            if post['attachments'][0]['type'] != 'poll':
+                continue
+
+            ok = Post(
+                id=post['id'],
+                date=post['date'],
+                text=post['text'],
+                poll=dumps(post['attachments'][0]['poll'])
+            )
+            print('Start saving')
+            ok.save()
+
+            exit(0)

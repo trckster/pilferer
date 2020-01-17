@@ -43,6 +43,8 @@ class Post(Model):
                 posted=False
             )
 
+            print('New post {} was created'.format(post['id']))
+
     @staticmethod
     def exists(post_id):
         posts = Post.select().where(Post.id == post_id)

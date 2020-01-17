@@ -21,9 +21,12 @@ def publish_post_to_channel_if_needed(token, telegram_channel_id):
 
     print('Posting {}'.format(post.id))
 
-    make_pre_post_with_text_if_needed(post, token, telegram_channel_id)
+    query = construct_query(post, token, telegram_channel_id)
 
-    query = construct_query_2(post, token, telegram_channel_id)
+    if not query:
+        print('Post {} failed'.format(post.id))
+        Post.update(posted=True).where(Post.id == post.id).execute()
+        return
 
     response = get(query, proxies=proxies)
 
@@ -36,33 +39,23 @@ def publish_post_to_channel_if_needed(token, telegram_channel_id):
     Post.update(posted=True).where(Post.id == post.id).execute()
 
 
-def make_pre_post_with_text_if_needed(post, token, telegram_channel_id):
-    if not len(post.text):
-        return
-
-    query = construct_query_1(post, token, telegram_channel_id)
-
-    return get(query, proxies=proxies)
-
-
-def construct_query_1(post, token, telegram_channel_id):
+def construct_query(post, token, telegram_channel_id):
     domain = 'https://api.telegram.org/'
     bot_secret = 'bot{}'.format(token)
 
-    message = post.text
+    question = post.text
 
-    query = f'{domain}{bot_secret}/sendMessage?chat_id={telegram_channel_id}&text={message}'
+    poll = loads(post.poll)
 
-    return query
+    if len(question) > 255:
+        return None
+    answers = []
+    for answer in poll['answers']:
+        if len(answer['text']) > 100:
+            return None
+        answers.append(answer['text'])
 
-
-def construct_query_2(post, token, telegram_channel_id):
-    domain = 'https://api.telegram.org/'
-    bot_secret = 'bot{}'.format(token)
-
-    question = 'What?'
-
-    options = dumps(['First one', 'Second one'])
+    options = dumps(answers)
 
     query = f'{domain}{bot_secret}/sendPoll?chat_id={telegram_channel_id}&question={question}&options={options}'
 

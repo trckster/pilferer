@@ -43,7 +43,7 @@ def construct_query(post, token, telegram_channel_id):
     domain = 'https://api.telegram.org/'
     bot_secret = 'bot{}'.format(token)
 
-    question = post.text
+    question = post.text if len(post.text) else 'Что бы вы выбрали?'
 
     poll = loads(post.poll)
 

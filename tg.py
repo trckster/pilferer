@@ -12,7 +12,7 @@ proxies = {
 }
 
 
-def publish_post_to_channel_if_needed(token, telegram_channel_id):
+def publish_post_to_channel_if_needed(token, telegram_channel_id, with_proxy):
     post = get_last_unpublished_post()
 
     if not post:
@@ -28,7 +28,10 @@ def publish_post_to_channel_if_needed(token, telegram_channel_id):
         Post.update(posted=True).where(Post.id == post.id).execute()
         return
 
-    response = get(query, proxies=proxies)
+    if with_proxy:
+        response = get(query, proxies=proxies)
+    else:
+        response = get(query)
 
     answer = loads(response.text)
 

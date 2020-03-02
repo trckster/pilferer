@@ -15,7 +15,7 @@ def main():
     posts = get_posts_from_vk(env['VK_TOKEN'], env['VK_GROUP_ID'], env['VK_POSTS_COUNT_LOAD'])
     Post.update_posts(posts)
 
-    publish_post_to_channel_if_needed(env['TG_TOKEN'], env['TG_CHANNEL_ID'])
+    publish_post_to_channel_if_needed(env['TG_TOKEN'], env['TG_CHANNEL_ID'], env['WITH_PROXY'])
 
 
 if __name__ == '__main__':

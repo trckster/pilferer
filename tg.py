@@ -29,8 +29,10 @@ def publish_post_to_channel_if_needed(token, telegram_channel_id, with_proxy):
         return
 
     if with_proxy:
+        print('Using proxy')
         response = get(query, proxies=proxies)
     else:
+        print('Not using proxy')
         response = get(query)
 
     answer = loads(response.text)

@@ -23,7 +23,7 @@ class Post(Model):
                 print('Post {} is ad, skipping'.format(post['id']))
                 continue
 
-            if not len(post['attachments']):
+            if 'attachments' not in post or not len(post['attachments']):
                 print('Post {} has no attachments, skipping'.format(post['id']))
                 continue
 
